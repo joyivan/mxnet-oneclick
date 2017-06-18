@@ -9,15 +9,15 @@ from skimage import io, transform
 from sklearn import metrics
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
-
-prefix = "chars/lenetweights"
-num_round = 20
+testdir="../platechars"
+prefix = testdir+"/lenetweights"
+num_round = 200
 model = mx.model.FeedForward.load(prefix, num_round, ctx=mx.gpu(), numpy_batch_size=1)
 
-mean_img = mx.nd.load("chars/mean.bin")["mean_img"]
+mean_img = mx.nd.load(testdir+"/mean.bin")["mean_img"]
 
 #mx.viz.plot_network(model.symbol,shape={"data",(1,1,20,20)})
-synset = [l.strip() for l in open('chars/synset.txt').readlines()]
+synset = [l.strip() for l in open(testdir+'/synset.txt').readlines()]
 batch_size=1
 data_shape = (3, 20, 20)
 def PreprocessImage(path, show_img=False):
@@ -41,7 +41,7 @@ def PreprocessImage(path, show_img=False):
     normed_img = sample - mean_img.asnumpy()
     normed_img.resize(1, 3,20, 20)
     return normed_img
-batch = PreprocessImage('chars/0/0.jpg', True)
+batch = PreprocessImage(testdir+'/0/0.jpg', True)
 prediction = model.predict(batch)[0]
 label=synset[prediction.argmax()]
 print str(label)+':'+str(prediction[label])
